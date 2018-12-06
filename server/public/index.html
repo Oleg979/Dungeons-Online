@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Dungeons</title>
+  </head>
+  <body>
+    <div id="game">
+      <h3>Добро пожаловать, {{ userName }}</h3>
+      <h1>Рейдов в подземелья: {{ raids.length }}</h1>
+      <div id="raids">
+        <div class="raid" v-for="(raid, index) in raids">
+          <p>
+            <b>{{ raid.title.toUpperCase() }}</b> для
+            <i>{{ raid.size }}</i> игроков
+            <b>{{
+              joinedRaid != index && raid.players.length == raid.size
+                ? "(Мест нет)"
+                : ""
+            }}</b>
+            <span v-if="raid.creator != userName">
+              <button
+                v-if="joinedRaid != index && raid.players.length < raid.size"
+                id="join"
+                @click="joinRaid(index)"
+              >
+                Присоединиться к рейду
+              </button>
+              <button
+                v-if="joinedRaid == index"
+                id="leave"
+                @click="leaveRaid(index)"
+              >
+                Покинуть рейд
+              </button>
+            </span>
+            <button v-else @click="removeRaid(index)">Удалить рейд</button>
+            <button
+              v-if="raid.players.length == raid.size && raid.creator == userName"
+            >
+              Начать рейд
+            </button>
+          </p>
+          <p v-for="(player, index) in raid.players">
+            {{ player }}{{ index == 0 ? "(лидер группы)" : "" }}
+          </p>
+          <p v-if="raid.players.length < raid.size">
+            Не хватает ещё {{ raid.size - raid.players.length }} игрока...
+          </p>
+          <p v-else>
+            Рейд готов! Ждем, когда {{ raid.creator }} отдаст приказ к
+            выступлению.
+          </p>
+        </div>
+      </div>
+      <div class="add">
+        <input type="text" placeholder="Title of raid" v-model="raidTitle" />
+        <input
+          type="number"
+          min="2"
+          max="5"
+          value="2"
+          placeholder="Size"
+          v-model="raidSize"
+        />
+        <button id="addRaid" @click="addRaid">Add Raid</button>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="client.js"></script>
+  </body>
+</html>
